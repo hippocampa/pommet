@@ -6,7 +6,7 @@ use ratatui::{
     layout::{Constraint, Direction, Layout},
 };
 
-use crate::tui::widgets::header::Header;
+use crate::tui::widgets::{header::Header, leftpanel::LeftPanel, rightpanel::RightPanel};
 
 pub struct App {
     exit: bool,
@@ -32,9 +32,17 @@ impl App {
     fn draw(&self, frame: &mut Frame) {
         let main_layout = Layout::default()
             .direction(Direction::Vertical)
-            .constraints(vec![Constraint::Percentage(10), Constraint::Percentage(90)])
+            .constraints(vec![Constraint::Length(5), Constraint::Min(0)])
             .split(frame.area());
         frame.render_widget(Header::new(), main_layout[0]);
+
+        let body_layout = Layout::default()
+            .direction(Direction::Horizontal)
+            .constraints(vec![Constraint::Percentage(50), Constraint::Percentage(50)])
+            .split(main_layout[1]);
+
+        frame.render_widget(LeftPanel, body_layout[0]);
+        frame.render_widget(RightPanel, body_layout[1]);
     }
 
     fn handle_events(&mut self) -> io::Result<()> {
