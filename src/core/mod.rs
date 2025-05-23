@@ -30,6 +30,16 @@ impl App {
     }
 
     fn draw(&self, frame: &mut Frame) {
+        //           Layout
+        // ┌──────────────────────────────┐
+        // │         Header               │
+        // ├──────────────┬───────────────┤
+        // │┌────────────┐│               │
+        // ││  Cpanel    ││  Log          │
+        // │├────────────┤│               │
+        // ││ Help Text  ││               │
+        // │└────────────┘└───────────────┘
+        //
         let main_layout = Layout::default()
             .direction(Direction::Vertical)
             .constraints(vec![Constraint::Length(5), Constraint::Min(0)])
