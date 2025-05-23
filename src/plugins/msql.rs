@@ -1,38 +1,38 @@
 use super::Plugin;
 
-pub struct Apache {
+pub struct MySQL {
     name: String,
     install_dir: String,
     is_on: bool,
 }
 
-impl Apache {
-    pub fn new() -> Apache {
-        Apache {
-            name: "Apache".to_string(),
-            install_dir: "bin/apache".to_string(),
+impl MySQL {
+    pub fn new() -> MySQL {
+        MySQL {
+            name: "MySQL".to_string(),
+            install_dir: "bin/mysql".to_string(),
             is_on: false,
         }
     }
 }
 
-impl Plugin for Apache {
+impl Plugin for MySQL {
     fn get_name(&self) -> &String {
         &self.name
     }
 
     fn install(&self) {
-        println!("apache todo...")
+        println!("MYSQL is installing...")
     }
 
     fn is_installed(&self) {
-        println!("apache todo...")
+        println!("MYSQL is installed")
     }
 
     fn start(&mut self) {
         // ! fix me: turning on is spawning a process
         if !self.is_on {
-            println!("apache is on");
+            println!("MYSQL is on");
             self.is_on = !self.is_on;
         }
     }
@@ -40,7 +40,7 @@ impl Plugin for Apache {
     fn stop(&mut self) {
         // ! fix me: turning off is killing a process
         if self.is_on {
-            println!("apache is off");
+            println!("MYSQL is off");
             self.is_on = !self.is_on;
         }
     }

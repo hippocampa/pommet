@@ -7,23 +7,28 @@ use ratatui::{
 };
 
 use crate::{
-    plugins::{Plugin, apache::Apache},
-    tui::widgets::{header::Header, leftpanel::LeftPanel, rightpanel::RightPanel},
+    plugins::{Plugin, apache::Apache, msql::MySQL},
+    tui::{
+        handlers::focushandler::FocusState,
+        widgets::{header::Header, leftpanel::LeftPanel, rightpanel::RightPanel},
+    },
 };
 
 pub struct App {
     plugins: Vec<Box<dyn Plugin>>,
     logs: VecDeque<String>,
     max_log_lines: usize,
+    focus: FocusState,
     exit: bool,
 }
 
 impl App {
     pub fn new() -> App {
         App {
-            plugins: vec![Box::new(Apache::init())], // TODO: it's just a toy for now
+            plugins: vec![Box::new(Apache::new()), Box::new(MySQL::new())], // TODO: it's just a toy for now
             logs: VecDeque::new(),
             max_log_lines: 100,
+            focus: FocusState::ControlPanel,
             exit: false,
         }
     }
@@ -69,7 +74,17 @@ impl App {
             .constraints(vec![Constraint::Percentage(50), Constraint::Percentage(50)])
             .split(main_layout[1]);
 
-        frame.render_widget(LeftPanel, body_layout[0]);
+        frame.render_widget(
+            LeftPanel::new(
+                &self.plugins,
+                if self.focus == FocusState::ControlPanel {
+                    true
+                } else {
+                    false
+                },
+            ),
+            body_layout[0],
+        );
         frame.render_widget(RightPanel, body_layout[1]);
     }
 
@@ -86,6 +101,8 @@ impl App {
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Char('q') => self.exit(),
+            KeyCode::Char('1') => self.focus = FocusState::ControlPanel,
+            KeyCode::Char('2') => self.focus = FocusState::LogPanel,
             _ => {}
         }
     }

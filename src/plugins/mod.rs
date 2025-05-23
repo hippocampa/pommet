@@ -1,4 +1,5 @@
 pub mod apache;
+pub mod msql;
 
 pub trait Plugin {
     fn get_name(&self) -> &String;
