@@ -1,4 +1,4 @@
-use std::io;
+use std::{collections::VecDeque, io};
 
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use ratatui::{
@@ -6,15 +6,33 @@ use ratatui::{
     layout::{Constraint, Direction, Layout},
 };
 
-use crate::tui::widgets::{header::Header, leftpanel::LeftPanel, rightpanel::RightPanel};
+use crate::{
+    plugins::{Plugin, apache::Apache},
+    tui::widgets::{header::Header, leftpanel::LeftPanel, rightpanel::RightPanel},
+};
 
 pub struct App {
+    plugins: Vec<Box<dyn Plugin>>,
+    logs: VecDeque<String>,
+    max_log_lines: usize,
     exit: bool,
 }
 
 impl App {
     pub fn new() -> App {
-        App { exit: false }
+        App {
+            plugins: vec![Box::new(Apache::init())], // TODO: it's just a toy for now
+            logs: VecDeque::new(),
+            max_log_lines: 100,
+            exit: false,
+        }
+    }
+
+    pub fn log_this(&mut self, text: &str) {
+        if self.logs.len() >= self.max_log_lines {
+            self.logs.pop_front();
+        }
+        self.logs.push_back(text.to_string());
     }
 
     pub fn exit(&mut self) {
