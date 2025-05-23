@@ -2,7 +2,7 @@ use core::App;
 use std::io;
 
 mod core;
-
+mod tui;
 fn main() -> io::Result<()> {
     let mut terminal = ratatui::init();
     let app_result = App::new().run(&mut terminal);
