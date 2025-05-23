@@ -22,9 +22,8 @@ impl Widget for HelpText {
                 Span::styled("q", Style::default().fg(Color::Yellow)),
                 Span::raw(": Quit  "),
                 Span::styled("1-2", Style::default().fg(Color::Yellow)),
-                Span::raw(": Select Pane  "),
-                Span::styled("Space", Style::default().fg(Color::Yellow)),
-                Span::raw(": Toggle Menu"),
+                Span::raw(": Select Pane  "),                Span::styled("Space/Enter", Style::default().fg(Color::Yellow)),
+                Span::raw(": Toggle Plugin  "),
             ]),
             Line::from(vec![
                 Span::styled("↑/↓", Style::default().fg(Color::Yellow)),

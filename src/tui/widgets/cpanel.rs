@@ -15,39 +15,12 @@ pub struct ControlPanel<'a> {
 }
 
 impl<'a> ControlPanel<'a> {
-    pub fn new(plugins: &'a [Box<dyn Plugin>], is_focused: bool) -> Self {
+    pub fn new(plugins: &'a [Box<dyn Plugin>], is_focused: bool, selected_index: usize) -> Self {
         Self {
             plugins,
             is_focused,
-            selected_index: 0, // Default: first item selected
+            selected_index,
         }
-    }
-
-    // Method to set selected index
-    pub fn select(&mut self, index: usize) {
-        if !self.plugins.is_empty() {
-            self.selected_index = index.min(self.plugins.len() - 1);
-        }
-    }
-
-    // Method to move selection up
-    pub fn previous(&mut self) {
-        if self.selected_index > 0 {
-            self.selected_index -= 1;
-        }
-    }
-
-    // Method to move selection down
-    pub fn next(&mut self) {
-        if !self.plugins.is_empty() && self.selected_index < self.plugins.len() - 1 {
-            self.selected_index += 1;
-        }
-    }
-
-    // Method to toggle the selected plugin
-    pub fn toggle_selected(&mut self) {
-        // This would require plugins to be mutable - would need implementation elsewhere
-        // For now, this is just a placeholder for the interface
     }
 }
 
@@ -120,15 +93,13 @@ impl<'a> Widget for ControlPanel<'a> {
                     },
                 )),
             ])
-        });
-
-        // Create the enhanced table
+        });        // Create the enhanced table
         let table = Table::new(
             rows,
             [Constraint::Percentage(70), Constraint::Percentage(30)],
         )
         .header(header)
-        .highlight_style(
+        .row_highlight_style(
             Style::default()
                 .bg(Color::DarkGray)
                 .add_modifier(Modifier::BOLD),

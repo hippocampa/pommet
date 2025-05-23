@@ -20,6 +20,7 @@ pub struct App {
     max_log_lines: usize,
     focus: FocusState,
     exit: bool,
+    selected_plugin_index: usize,
 }
 
 impl App {
@@ -30,6 +31,7 @@ impl App {
             max_log_lines: 100,
             focus: FocusState::ControlPanel,
             exit: false,
+            selected_plugin_index: 0,
         }
     }
 
@@ -73,7 +75,6 @@ impl App {
             .direction(Direction::Horizontal)
             .constraints(vec![Constraint::Percentage(50), Constraint::Percentage(50)])
             .split(main_layout[1]);
-
         frame.render_widget(
             LeftPanel::new(
                 &self.plugins,
@@ -82,6 +83,7 @@ impl App {
                 } else {
                     false
                 },
+                self.selected_plugin_index,
             ),
             body_layout[0],
         );
@@ -97,12 +99,29 @@ impl App {
         }
         Ok(())
     }
-
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Char('q') => self.exit(),
             KeyCode::Char('1') => self.focus = FocusState::ControlPanel,
             KeyCode::Char('2') => self.focus = FocusState::LogPanel,
+            // Handle arrow keys for navigation when control panel is focused
+            KeyCode::Up if self.focus == FocusState::ControlPanel => {
+                if self.selected_plugin_index > 0 {
+                    self.selected_plugin_index -= 1;
+                }
+            }
+            KeyCode::Down if self.focus == FocusState::ControlPanel => {
+                if !self.plugins.is_empty() && self.selected_plugin_index < self.plugins.len() - 1 {
+                    self.selected_plugin_index += 1;
+                }
+            }
+            // Toggle the selected plugin with Enter or Space when control panel is focused
+            KeyCode::Enter | KeyCode::Char(' ') if self.focus == FocusState::ControlPanel => {
+                if !self.plugins.is_empty() {
+                    // Access the plugin mutably and toggle its state
+                    self.plugins[self.selected_plugin_index].toggle();
+                }
+            }
             _ => {}
         }
     }
