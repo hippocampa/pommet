@@ -4,18 +4,18 @@ use ratatui::{
 };
 
 #[derive(Default)]
-pub struct ControlPanel {
+pub struct LogPrinter {
     is_selected: bool,
 }
 
-impl Widget for ControlPanel {
+impl Widget for LogPrinter {
     fn render(self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer)
     where
         Self: Sized,
     {
-        let cpanel_block = Block::bordered()
-            .title("[1] Control Panel")
+        let logprinter_block = Block::bordered()
+            .title("[2] Log")
             .title_alignment(Alignment::Center);
-        cpanel_block.render(area, buf);
+        logprinter_block.render(area, buf);
     }
 }

@@ -1,5 +1,7 @@
 use ratatui::widgets::{Block, Borders, Widget};
 
+use super::logprinter::LogPrinter;
+
 pub struct RightPanel;
 
 impl Widget for RightPanel {
@@ -7,7 +9,7 @@ impl Widget for RightPanel {
     where
         Self: Sized,
     {
-        let top_block = Block::default().borders(Borders::ALL).title("Top Panel");
-        top_block.render(area, buf);
+        let logprinter = LogPrinter::default();
+        logprinter.render(area, buf);
     }
 }
