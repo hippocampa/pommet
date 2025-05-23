@@ -3,7 +3,7 @@ use super::Plugin;
 pub struct Apache {
     name: String,
     install_dir: String,
-    is_on: bool,
+    status: String,
 }
 
 impl Apache {
@@ -11,7 +11,7 @@ impl Apache {
         Apache {
             name: "Apache".to_string(),
             install_dir: "bin/apache".to_string(),
-            is_on: false,
+            status: "on".to_string(),
         }
     }
 }
@@ -29,19 +29,19 @@ impl Plugin for Apache {
         println!("apache todo...")
     }
 
-    fn start(&mut self) {
-        // ! fix me: turning on is spawning a process
-        if !self.is_on {
-            println!("apache is on");
-            self.is_on = !self.is_on;
+    fn toggle(&mut self) {
+        if self.status == "off".to_string() {
+            self.status = "on".to_string();
+        } else {
+            self.status = "off".to_string();
         }
     }
 
-    fn stop(&mut self) {
-        // ! fix me: turning off is killing a process
-        if self.is_on {
-            println!("apache is off");
-            self.is_on = !self.is_on;
-        }
+    fn status(&self) -> &String {
+        &self.status
+    }
+
+    fn ref_array(&self) -> [&String; 2] {
+        [&self.get_name(), &self.status]
     }
 }

@@ -3,7 +3,7 @@ use super::Plugin;
 pub struct MySQL {
     name: String,
     install_dir: String,
-    is_on: bool,
+    status: String,
 }
 
 impl MySQL {
@@ -11,7 +11,7 @@ impl MySQL {
         MySQL {
             name: "MySQL".to_string(),
             install_dir: "bin/mysql".to_string(),
-            is_on: false,
+            status: "off".to_string(),
         }
     }
 }
@@ -29,19 +29,19 @@ impl Plugin for MySQL {
         println!("MYSQL is installed")
     }
 
-    fn start(&mut self) {
-        // ! fix me: turning on is spawning a process
-        if !self.is_on {
-            println!("MYSQL is on");
-            self.is_on = !self.is_on;
+    fn toggle(&mut self) {
+        if self.status == "off".to_string() {
+            self.status = "on".to_string();
+        } else {
+            self.status = "off".to_string();
         }
     }
 
-    fn stop(&mut self) {
-        // ! fix me: turning off is killing a process
-        if self.is_on {
-            println!("MYSQL is off");
-            self.is_on = !self.is_on;
-        }
+    fn status(&self) -> &String {
+        &self.status
+    }
+
+    fn ref_array(&self) -> [&String; 2] {
+        [&self.get_name(), &self.status]
     }
 }

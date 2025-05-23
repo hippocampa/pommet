@@ -1,7 +1,7 @@
 use ratatui::{
     layout::Alignment,
     style::{Color, Style},
-    widgets::{Block, Widget},
+    widgets::{Block, Cell, Row, Widget},
 };
 
 use crate::plugins::Plugin;
@@ -31,6 +31,13 @@ impl<'a> Widget for ControlPanel<'a> {
         } else {
             Color::Gray
         });
+
+        let table_header = ["plugin", "status"]
+            .into_iter()
+            .map(Cell::from)
+            .collect::<Row>()
+            .height(1);
+
         let cpanel_block = Block::bordered()
             .border_style(border_style)
             .title("[1] Control Panel")
