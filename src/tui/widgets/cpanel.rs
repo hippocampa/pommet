@@ -1,7 +1,7 @@
 use ratatui::{
-    layout::Alignment,
+    layout::{Alignment, Constraint, Rect},
     style::{Color, Style},
-    widgets::{Block, Cell, Row, Widget},
+    widgets::{Block, Borders, Cell, Row, Table, Widget},
 };
 
 use crate::plugins::Plugin;
@@ -32,16 +32,46 @@ impl<'a> Widget for ControlPanel<'a> {
             Color::Gray
         });
 
-        let table_header = ["plugin", "status"]
-            .into_iter()
-            .map(Cell::from)
-            .collect::<Row>()
-            .height(1);
-
+        // Create the outer block
         let cpanel_block = Block::bordered()
             .border_style(border_style)
             .title("[1] Control Panel")
             .title_alignment(Alignment::Center);
+
+        // Calculate the inner area for the table
+        let inner_area = cpanel_block.inner(area);
+
+        // Create the table header
+        let header = Row::new(vec![
+            Cell::from("Plugin Name").style(Style::default().fg(Color::Green)),
+            Cell::from("Status").style(Style::default().fg(Color::Green)),
+        ]);
+
+        // Create rows for each plugin
+        let rows = self.plugins.iter().map(|plugin| {
+            Row::new(vec![
+                Cell::from(plugin.get_name().as_str()),
+                Cell::from(plugin.status().as_str()).style(Style::default().fg(
+                    if plugin.status() == "on" {
+                        Color::Green
+                    } else {
+                        Color::Red
+                    },
+                )),
+            ])
+        });
+
+        // Create the table
+        let table = Table::new(
+            rows,
+            [Constraint::Percentage(50), Constraint::Percentage(50)],
+        )
+        .header(header)
+        .row_highlight_style(Style::default().bg(Color::DarkGray))
+        .column_spacing(1);
+
+        // Render the block and the table
         cpanel_block.render(area, buf);
+        table.render(inner_area, buf);
     }
 }
