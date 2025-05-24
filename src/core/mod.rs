@@ -104,7 +104,6 @@ impl App {
             KeyCode::Char('q') => self.exit(),
             KeyCode::Char('1') => self.focus = FocusState::ControlPanel,
             KeyCode::Char('2') => self.focus = FocusState::LogPanel,
-            // Handle arrow keys for navigation when control panel is focused
             KeyCode::Up if self.focus == FocusState::ControlPanel => {
                 if self.selected_plugin_index > 0 {
                     self.selected_plugin_index -= 1;
@@ -115,7 +114,6 @@ impl App {
                     self.selected_plugin_index += 1;
                 }
             }
-            // Toggle the selected plugin with Enter or Space when control panel is focused
             KeyCode::Enter | KeyCode::Char(' ') if self.focus == FocusState::ControlPanel => {
                 if !self.plugins.is_empty() {
                     // Access the plugin mutably and toggle its state

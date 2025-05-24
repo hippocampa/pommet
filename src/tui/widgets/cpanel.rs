@@ -1,5 +1,5 @@
 use ratatui::{
-    layout::{Alignment, Constraint, Rect},
+    layout::{Alignment, Constraint},
     style::{Color, Modifier, Style},
     text::Span,
     widgets::{Block, BorderType, Borders, Cell, Row, Table, Widget},
@@ -35,7 +35,6 @@ impl<'a> Widget for ControlPanel<'a> {
             Color::Gray
         });
 
-        // Create the outer block with a more decorative border
         let cpanel_block = Block::default()
             .borders(Borders::ALL)
             .border_type(BorderType::Rounded)
@@ -52,10 +51,8 @@ impl<'a> Widget for ControlPanel<'a> {
             ))
             .title_alignment(Alignment::Center);
 
-        // Calculate the inner area for the table
         let inner_area = cpanel_block.inner(area);
 
-        // Create the table header with improved styling
         let header = Row::new(vec![
             Cell::from(" Plugin Name ").style(
                 Style::default()
@@ -69,7 +66,6 @@ impl<'a> Widget for ControlPanel<'a> {
             ),
         ]);
 
-        // Create rows for each plugin with indicators for selection
         let rows = self.plugins.iter().enumerate().map(|(i, plugin)| {
             let status_text = plugin.status();
             let is_selected = self.is_focused && i == self.selected_index;
@@ -93,7 +89,7 @@ impl<'a> Widget for ControlPanel<'a> {
                     },
                 )),
             ])
-        });        // Create the enhanced table
+        });
         let table = Table::new(
             rows,
             [Constraint::Percentage(70), Constraint::Percentage(30)],
@@ -111,7 +107,6 @@ impl<'a> Widget for ControlPanel<'a> {
         .widths(&[Constraint::Percentage(70), Constraint::Percentage(30)])
         .column_spacing(2);
 
-        // Render the block and the table
         cpanel_block.render(area, buf);
         table.render(inner_area, buf);
     }

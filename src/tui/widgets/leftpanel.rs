@@ -1,6 +1,6 @@
 use ratatui::{
     layout::{Constraint, Direction, Layout},
-    widgets::{Block, Borders, Widget},
+    widgets::Widget,
 };
 
 use crate::plugins::Plugin;
