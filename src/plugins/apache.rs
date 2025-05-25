@@ -1,3 +1,5 @@
+use crate::{plugins::utils, tui::app};
+
 use super::Plugin;
 
 // https://www.apachelounge.com/download/VS17/binaries/httpd-2.4.63-250207-win64-VS17.zip
@@ -19,6 +21,11 @@ impl Apache {
             install_dir: "bin/apache".to_string(),
         }
     }
+
+    async fn download(&self) -> Result<(), Box<dyn std::error::Error>> {
+        utils::download_plugin(&self.download_url, "apache.zip").await?;
+        Ok(())
+    }
 }
 
 impl Plugin for Apache {
@@ -26,7 +33,13 @@ impl Plugin for Apache {
         &self.name
     }
     fn install(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        // Create a runtime to run the async download function
+        println!("Downloading {}", self.name());
+        let rt = tokio::runtime::Runtime::new()?;
+        rt.block_on(self.download())?;
+
         println!("Installing {}", self.name());
+        self.is_installed = true;
         Ok(())
     }
     fn is_installed(&self) -> bool {
