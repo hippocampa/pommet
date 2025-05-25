@@ -1,8 +1,10 @@
-use crate::plugins::utils;
+use std::path::Path;
 
 use super::Plugin;
+use crate::plugins::utils;
 
-// https://www.apachelounge.com/download/VS17/binaries/httpd-2.4.63-250207-win64-VS17.zip
+const APACHE_CONFIG: &[u8] = include_bytes!("../config/httpd.conf");
+
 pub struct Apache {
     name: String,
     download_url: String,
@@ -43,7 +45,15 @@ impl Plugin for Apache {
         utils::unzip("apache.zip", &full_install_dir)?;
 
         println!("Installing {}", self.name());
+        utils::write_conf(
+            &APACHE_CONFIG,
+            Path::new(&full_install_dir)
+                .join("Apache24")
+                .join("conf")
+                .join("httpd.conf"),
+        )?;
         self.is_installed = true;
+        println!("{} is installed", self.name);
         Ok(())
     }
     fn is_installed(&self) -> bool {

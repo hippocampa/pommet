@@ -2,7 +2,7 @@ use futures_util::StreamExt;
 use std::error::Error;
 use std::fs::{File as StdFile, create_dir_all};
 use std::io::{Write, stdout};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use tokio::{fs::File, io::AsyncWriteExt};
 use zip::ZipArchive;
 
@@ -93,7 +93,22 @@ pub fn unzip(src: &str, dest: &str) -> Result<(), Box<dyn Error>> {
             "Extract",
         )?;
     }
-
     println!("\nExtraction complete!");
+
+    println!("Cleaning up temporary files...");
+    match std::fs::remove_file(src) {
+        Ok(_) => println!("Removed temporary file: {}", src),
+        Err(e) => println!("Warning: Could not remove temporary file {}: {}", src, e),
+    }
+
+    Ok(())
+}
+
+pub fn write_conf(config_bytes: &[u8], dest: PathBuf) -> Result<(), Box<dyn Error>> {
+    if let Some(parent) = dest.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+    let mut file = StdFile::create(&dest)?;
+    file.write_all(config_bytes)?;
     Ok(())
 }
