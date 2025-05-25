@@ -28,3 +28,8 @@
     <a href="https://github.com/hippocampa/pommet/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
   </p>
 </div>
+
+
+## Todo
+
+- [ ] Log Rotation

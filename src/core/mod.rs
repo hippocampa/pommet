@@ -1,4 +1,4 @@
-use std::io;
+use std::{collections::VecDeque, error::Error, io};
 
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use ratatui::{
@@ -6,15 +6,40 @@ use ratatui::{
     layout::{Constraint, Direction, Layout},
 };
 
-use crate::tui::widgets::{header::Header, leftpanel::LeftPanel, rightpanel::RightPanel};
+use crate::{
+    plugins::{Plugin, apache::Apache, msql::MySQL},
+    tui::{
+        handlers::focushandler::FocusState,
+        widgets::{header::Header, leftpanel::LeftPanel, rightpanel::RightPanel},
+    },
+};
 
 pub struct App {
+    plugins: Vec<Box<dyn Plugin>>,
+    logs: VecDeque<String>,
+    max_log_lines: usize,
+    focus: FocusState,
     exit: bool,
+    selected_plugin_index: usize,
 }
 
 impl App {
     pub fn new() -> App {
-        App { exit: false }
+        App {
+            plugins: vec![Box::new(Apache::new()), Box::new(MySQL::new())], // TODO: it's just a toy for now
+            logs: VecDeque::new(),
+            max_log_lines: 100,
+            focus: FocusState::ControlPanel,
+            exit: false,
+            selected_plugin_index: 0,
+        }
+    }
+
+    pub fn log_this(&mut self, text: &str) {
+        if self.logs.len() >= self.max_log_lines {
+            self.logs.pop_front();
+        }
+        self.logs.push_back(text.to_string());
     }
 
     pub fn exit(&mut self) {
@@ -50,8 +75,18 @@ impl App {
             .direction(Direction::Horizontal)
             .constraints(vec![Constraint::Percentage(50), Constraint::Percentage(50)])
             .split(main_layout[1]);
-
-        frame.render_widget(LeftPanel, body_layout[0]);
+        frame.render_widget(
+            LeftPanel::new(
+                &self.plugins,
+                if self.focus == FocusState::ControlPanel {
+                    true
+                } else {
+                    false
+                },
+                self.selected_plugin_index,
+            ),
+            body_layout[0],
+        );
         frame.render_widget(RightPanel, body_layout[1]);
     }
 
@@ -64,11 +99,61 @@ impl App {
         }
         Ok(())
     }
-
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Char('q') => self.exit(),
+            KeyCode::Char('1') => self.focus = FocusState::ControlPanel,
+            KeyCode::Char('2') => self.focus = FocusState::LogPanel,
+            KeyCode::Up if self.focus == FocusState::ControlPanel => {
+                if self.selected_plugin_index > 0 {
+                    self.selected_plugin_index -= 1;
+                }
+            }
+            KeyCode::Down if self.focus == FocusState::ControlPanel => {
+                if !self.plugins.is_empty() && self.selected_plugin_index < self.plugins.len() - 1 {
+                    self.selected_plugin_index += 1;
+                }
+            }
+            KeyCode::Enter | KeyCode::Char(' ') if self.focus == FocusState::ControlPanel => {
+                if !self.plugins.is_empty() {
+                    // Access the plugin mutably and toggle its state
+                    self.plugins[self.selected_plugin_index].toggle();
+                }
+            }
             _ => {}
         }
+    }
+
+    pub fn all_plugin_installed(&self) -> bool {
+        for plugin in &self.plugins {
+            if !plugin.is_installed() {
+                return false;
+            }
+        }
+        true
+    }
+    pub fn install_all_plugins(&mut self) -> Result<(), Box<dyn Error>> {
+        use crossterm::style::{Color, Stylize};
+
+        for plugin in &mut self.plugins {
+            println!(
+                "{}{}{}",
+                "Installing ".white(),
+                plugin.get_name().as_str().bold().with(Color::Blue),
+                "...".white()
+            );
+            plugin.install()?;
+            println!(
+                "\n{}{}{}",
+                plugin.get_name().as_str().bold().with(Color::Blue),
+                " installation ".white(),
+                "completed.".bold().green()
+            );
+            println!(
+                "{}",
+                "----------------------------------------------------------------".dark_grey()
+            );
+        }
+        Ok(())
     }
 }
