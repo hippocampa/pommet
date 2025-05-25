@@ -1,5 +1,8 @@
+use std::error::Error;
+
 use super::Plugin;
 
+use crossterm::style::{Color, Stylize};
 pub struct MySQL {
     name: String,
     install_dir: String,
@@ -21,15 +24,24 @@ impl MySQL {
 impl Plugin for MySQL {
     fn get_name(&self) -> &String {
         &self.name
-    }    fn install(&mut self) {
-        use crossterm::style::{Stylize, Color};
-        
-        println!("{}", "Installing MySQL database...".bold().with(Color::Magenta));
-        println!("Installing to directory: {}", &self.install_dir.as_str().yellow());
+    }
+    fn install(&mut self) -> Result<(), Box<dyn Error>> {
+        println!(
+            "{}",
+            "Installing MySQL database...".bold().with(Color::Magenta)
+        );
+        println!(
+            "Installing to directory: {}",
+            &self.install_dir.as_str().yellow()
+        );
         println!("{}", "Configuring MySQL...".italic().with(Color::Blue));
-        println!("{}", "Setting up default databases...".with(Color::DarkCyan));
+        println!(
+            "{}",
+            "Setting up default databases...".with(Color::DarkCyan)
+        );
         println!("{}", "MySQL installation completed!".bold().green());
         self.is_installed = true;
+        Ok(())
     }
 
     fn is_installed(&self) -> bool {

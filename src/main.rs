@@ -1,11 +1,11 @@
 use core::App;
 use crossterm::style::{Color, Stylize};
-use std::io;
+use std::{error::Error, io};
 
 mod core;
 mod plugins;
 mod tui;
-fn main() -> io::Result<()> {
+fn main() -> Result<(), Box<dyn Error>> {
     let mut app = App::new();
 
     println!(
@@ -19,7 +19,7 @@ fn main() -> io::Result<()> {
             "{}",
             "Some plugins are not installed. Installing now...".with(Color::Yellow)
         );
-        app.install_all_plugins();
+        app.install_all_plugins()?;
         println!(
             "{}",
             "All plugins have been installed successfully."
@@ -42,7 +42,7 @@ fn main() -> io::Result<()> {
 
     // println!("Launching TUI application...");
     let mut terminal = ratatui::init();
-    let app_result = app.run(&mut terminal);
+    app.run(&mut terminal)?;
     ratatui::restore();
-    app_result
+    Ok(())
 }

@@ -1,4 +1,4 @@
-use std::{collections::VecDeque, io};
+use std::{collections::VecDeque, error::Error, io};
 
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use ratatui::{
@@ -132,7 +132,7 @@ impl App {
         }
         true
     }
-    pub fn install_all_plugins(&mut self) {
+    pub fn install_all_plugins(&mut self) -> Result<(), Box<dyn Error>> {
         use crossterm::style::{Color, Stylize};
 
         for plugin in &mut self.plugins {
@@ -142,7 +142,7 @@ impl App {
                 plugin.get_name().as_str().bold().with(Color::Blue),
                 "...".white()
             );
-            plugin.install();
+            plugin.install()?;
             println!(
                 "\n{}{}{}",
                 plugin.get_name().as_str().bold().with(Color::Blue),
@@ -154,5 +154,6 @@ impl App {
                 "----------------------------------------------------------------".dark_grey()
             );
         }
+        Ok(())
     }
 }
