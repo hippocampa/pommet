@@ -1,4 +1,4 @@
-use crate::{plugins::utils, tui::app};
+use crate::plugins::utils;
 
 use super::Plugin;
 
@@ -18,7 +18,7 @@ impl Apache {
             name: "Apache Server v2.4.63".to_string(),
             download_url: "https://www.apachelounge.com/download/VS17/binaries/httpd-2.4.63-250207-win64-VS17.zip".to_string(),
             is_installed: false,
-            install_dir: "bin/apache".to_string(),
+            install_dir: "bin".to_string(),
         }
     }
 
@@ -33,16 +33,21 @@ impl Plugin for Apache {
         &self.name
     }
     fn install(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        let full_install_dir = format!("C:/pommet/{}", self.install_dir);
         // Create a runtime to run the async download function
         println!("Downloading {}", self.name());
         let rt = tokio::runtime::Runtime::new()?;
         rt.block_on(self.download())?;
+
+        println!("Extracting {} to {}", self.name(), full_install_dir);
+        utils::unzip("apache.zip", &full_install_dir)?;
 
         println!("Installing {}", self.name());
         self.is_installed = true;
         Ok(())
     }
     fn is_installed(&self) -> bool {
+        // if the install_dir exist, then return true
         self.is_installed
     }
     fn toggle(&mut self) {
