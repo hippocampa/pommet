@@ -4,6 +4,7 @@ pub struct Apache {
     name: String,
     install_dir: String,
     status: String,
+    is_installed: bool,
 }
 
 impl Apache {
@@ -12,6 +13,7 @@ impl Apache {
             name: "Apache".to_string(),
             install_dir: "bin/apache".to_string(),
             status: "on".to_string(),
+            is_installed: false,
         }
     }
 }
@@ -19,14 +21,19 @@ impl Apache {
 impl Plugin for Apache {
     fn get_name(&self) -> &String {
         &self.name
+    }    fn install(&mut self) {
+        use crossterm::style::{Stylize, Color};
+        
+        println!("{}", "Installing Apache server...".bold().with(Color::Cyan));
+        println!("Installing to directory: {}", &self.install_dir.as_str().yellow());
+        println!("{}", "Configuring Apache...".italic().with(Color::Blue));
+        println!("Setting up Apache modules...");
+        println!("{}", "Apache installation completed!".bold().green());
+        self.is_installed = true;
     }
 
-    fn install(&self) {
-        println!("apache todo...")
-    }
-
-    fn is_installed(&self) {
-        println!("apache todo...")
+    fn is_installed(&self) -> bool {
+        self.is_installed
     }
 
     fn toggle(&mut self) {

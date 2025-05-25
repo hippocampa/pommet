@@ -123,4 +123,36 @@ impl App {
             _ => {}
         }
     }
+
+    pub fn all_plugin_installed(&self) -> bool {
+        for plugin in &self.plugins {
+            if !plugin.is_installed() {
+                return false;
+            }
+        }
+        true
+    }
+    pub fn install_all_plugins(&mut self) {
+        use crossterm::style::{Color, Stylize};
+
+        for plugin in &mut self.plugins {
+            println!(
+                "{}{}{}",
+                "Installing ".white(),
+                plugin.get_name().as_str().bold().with(Color::Blue),
+                "...".white()
+            );
+            plugin.install();
+            println!(
+                "\n{}{}{}",
+                plugin.get_name().as_str().bold().with(Color::Blue),
+                " installation ".white(),
+                "completed.".bold().green()
+            );
+            println!(
+                "{}",
+                "----------------------------------------------------------------".dark_grey()
+            );
+        }
+    }
 }

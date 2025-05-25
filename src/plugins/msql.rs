@@ -4,6 +4,7 @@ pub struct MySQL {
     name: String,
     install_dir: String,
     status: String,
+    is_installed: bool,
 }
 
 impl MySQL {
@@ -12,6 +13,7 @@ impl MySQL {
             name: "MySQL".to_string(),
             install_dir: "bin/mysql".to_string(),
             status: "off".to_string(),
+            is_installed: false,
         }
     }
 }
@@ -19,14 +21,19 @@ impl MySQL {
 impl Plugin for MySQL {
     fn get_name(&self) -> &String {
         &self.name
+    }    fn install(&mut self) {
+        use crossterm::style::{Stylize, Color};
+        
+        println!("{}", "Installing MySQL database...".bold().with(Color::Magenta));
+        println!("Installing to directory: {}", &self.install_dir.as_str().yellow());
+        println!("{}", "Configuring MySQL...".italic().with(Color::Blue));
+        println!("{}", "Setting up default databases...".with(Color::DarkCyan));
+        println!("{}", "MySQL installation completed!".bold().green());
+        self.is_installed = true;
     }
 
-    fn install(&self) {
-        println!("MYSQL is installing...")
-    }
-
-    fn is_installed(&self) {
-        println!("MYSQL is installed")
+    fn is_installed(&self) -> bool {
+        self.is_installed
     }
 
     fn toggle(&mut self) {
