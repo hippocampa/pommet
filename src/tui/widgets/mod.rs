@@ -1,6 +1,0 @@
-pub mod cpanel;
-pub mod header;
-pub mod helptext;
-pub mod leftpanel;
-pub mod logprinter;
-pub mod rightpanel;

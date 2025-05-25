@@ -1,66 +1,39 @@
-use std::path::Path;
-
-use crate::plugins::utils::extract_bz2;
-
 use super::Plugin;
-use crossterm::style::{Color, Stylize};
 
-const APACHE_EXECUTABLE: &[u8] = include_bytes!("../../assets/apache.tar.bz2");
+// https://www.apachelounge.com/download/VS17/binaries/httpd-2.4.63-250207-win64-VS17.zip
 pub struct Apache {
     name: String,
+    download_url: String,
+    // pid: int?
+    // status: on/ofF
+    is_installed: bool, // needs to be checked
     install_dir: String,
-    status: String,
-    is_installed: bool,
 }
 
 impl Apache {
-    pub fn new() -> Apache {
-        Apache {
-            name: "Apache".to_string(),
-            install_dir: "bin/apache".to_string(),
-            status: "on".to_string(),
+    pub fn new() -> Self {
+        Self {
+            name: "Apache Server v2.4.63".to_string(),
+            download_url: "https://www.apachelounge.com/download/VS17/binaries/httpd-2.4.63-250207-win64-VS17.zip".to_string(),
             is_installed: false,
+            install_dir: "bin/apache".to_string(),
         }
     }
 }
 
 impl Plugin for Apache {
-    fn get_name(&self) -> &String {
+    fn name(&self) -> &String {
         &self.name
     }
-    fn install(&mut self) -> Result<(), Box<(dyn std::error::Error + 'static)>> {
-        let install_dest = format!("c:/pommet/{}", self.install_dir);
-        println!("{}", "Installing Apache server...".bold().with(Color::Cyan));
-        extract_bz2(APACHE_EXECUTABLE, Path::new(&install_dest))?;
-        println!(
-            "Installing to directory: {}",
-            &install_dest.as_str().yellow()
-        );
-        // TODO:
-        // println!("{}", "Configuring Apache...".italic().with(Color::Blue));
-        // println!("Setting up Apache modules...");
-        println!("{}", "Apache installation completed!".bold().green());
-        self.is_installed = true;
+    fn install(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        println!("Installing {}", self.name());
         Ok(())
     }
-
     fn is_installed(&self) -> bool {
         self.is_installed
     }
-
     fn toggle(&mut self) {
-        if self.status == "off".to_string() {
-            self.status = "on".to_string();
-        } else {
-            self.status = "off".to_string();
-        }
-    }
-
-    fn status(&self) -> &String {
-        &self.status
-    }
-
-    fn ref_array(&self) -> [&String; 2] {
-        [&self.get_name(), &self.status]
+        println!("Toggling");
+        todo!();
     }
 }
