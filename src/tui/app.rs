@@ -10,7 +10,6 @@ use crate::plugins::{Plugin, apache::Apache, mariadb::Mariadb, php::PHP};
 
 pub struct App {
     plugins: Vec<Box<dyn Plugin>>,
-    root_dir: String,
     exit: bool,
 }
 
@@ -22,7 +21,6 @@ impl App {
                 Box::new(PHP::new()),
                 Box::new(Mariadb::new()),
             ],
-            root_dir: "C:/pommet".to_string(),
             exit: false,
         }
     }
