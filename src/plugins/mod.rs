@@ -1,6 +1,7 @@
 use std::error::Error;
 
 pub mod apache;
+pub mod mariadb;
 pub mod php;
 mod utils;
 
