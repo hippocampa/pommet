@@ -7,7 +7,7 @@ use std::{
 use super::{Plugin, PluginStatus};
 use crate::plugins::utils;
 
-const APACHE_CONFIG: &[u8] = include_bytes!("../config/httpd.conf");
+const MARIADB_CONFIG: &[u8] = include_bytes!("../config/my.ini");
 
 pub struct Mariadb {
     name: String,
@@ -21,7 +21,7 @@ pub struct Mariadb {
 impl Mariadb {
     pub fn new() -> Self {
         let mut is_installed = false;
-        if Path::new("C:/pommet/bin/mariadb-11.4.7-winx64/mariadb-11.4.7-winx64/bin/mysqld.exe").exists() {
+        if Path::new("C:/pommet/bin/mariadb-11.4.7-winx64/bin/mysqld.exe").exists() {
             is_installed = true
         }
         Self {
@@ -59,7 +59,7 @@ impl Mariadb {
         Err(format!("MariaDB failed to start after {} attempts", max_attempts).into())
     }
     fn initialize_db(&self) -> Result<(), Box<dyn Error>> {
-        let install_path = format!("C:/pommet/bin/mariadb-11.4.7-winx64/mariadb-11.4.7-winx64");
+        let install_path = format!("C:/pommet/bin/mariadb-11.4.7-winx64");
         let data_dir = format!("{}/data", install_path);
 
         // Create the data directory if it doesn't exist
@@ -97,9 +97,8 @@ impl Plugin for Mariadb {
 
         println!("Writing configuration for {}", self.name());
         utils::write_conf(
-            &APACHE_CONFIG,
+            &MARIADB_CONFIG,
             Path::new(&full_install_dir)
-            .join( "mariadb-11.4.7-winx64")
             .join( "mariadb-11.4.7-winx64")
             .join( "my.ini")
         )?;
@@ -119,7 +118,7 @@ impl Plugin for Mariadb {
         match self.status {
             PluginStatus::On => {
                 if let Some(mut child) = self.child_process.take() {
-                    let shutdown = Command::new("C:/pommet/bin/mariadb-11.4.7-winx64/mariadb-11.4.7-winx64/bin/mysqladmin").args(&["-u", "root", "shutdown"]).status();
+                    let shutdown = Command::new("C:/pommet/bin/mariadb-11.4.7-winx64/bin/mysqladmin").args(&["-u", "root", "shutdown"]).status();
                     if shutdown.is_err(){
                         child.kill()?;
                     }
@@ -128,14 +127,14 @@ impl Plugin for Mariadb {
                 }
             }
             PluginStatus::Off => {
-                let command_path = Path::new("C:/pommet/bin/mariadb-11.4.7-winx64/mariadb-11.4.7-winx64/bin/mysqld.exe");
+                let command_path = Path::new("C:/pommet/bin/mariadb-11.4.7-winx64/bin/mysqld.exe");
                 
                 if !command_path.exists() {
                     return Err(format!("MariaDB executable not found at: {}", command_path.display()).into());
                 }
                 
                 let child = Command::new(command_path)
-                .arg("--defaults-file=C:/pommet/bin/mariadb-11.4.7-winx64/mariadb-11.4.7-winx64/my.ini")
+                .arg("--defaults-file=C:/pommet/bin/mariadb-11.4.7-winx64/my.ini")
                     .spawn()
                     .map_err(|e| format!("Failed to start MariaDB: {}", e))?;
                     

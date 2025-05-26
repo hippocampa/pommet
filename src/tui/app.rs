@@ -6,7 +6,7 @@ use ratatui::{
     widgets::{Block, Paragraph},
 };
 
-use crate::plugins::{Plugin, apache::Apache, php::PHP};
+use crate::plugins::{Plugin, apache::Apache, mariadb::Mariadb, php::PHP};
 
 pub struct App {
     plugins: Vec<Box<dyn Plugin>>,
@@ -17,7 +17,11 @@ pub struct App {
 impl App {
     pub fn new() -> Self {
         Self {
-            plugins: vec![Box::new(Apache::new()), Box::new(PHP::new())],
+            plugins: vec![
+                Box::new(Apache::new()),
+                Box::new(PHP::new()),
+                Box::new(Mariadb::new()),
+            ],
             root_dir: "C:/pommet".to_string(),
             exit: false,
         }
@@ -39,7 +43,7 @@ impl App {
 
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<(), Box<dyn Error>> {
         // test
-        self.plugins[0].toggle()?;
+        self.plugins[2].toggle()?;
         while !self.exit {
             terminal.draw(|frame| self.draw(frame))?;
             self.handle_events()?;
