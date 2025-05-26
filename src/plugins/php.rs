@@ -1,7 +1,8 @@
-use std::{error::Error, path::Path};
+use std::{error::Error, fs, path::Path};
 
 use super::{Plugin, PluginStatus};
 use crate::plugins::utils;
+use std::os::windows::fs::MetadataExt;
 
 // TODO: php.ini
 const PHP_CONFIG: &[u8] = include_bytes!("../config/php.ini");
@@ -55,6 +56,16 @@ impl Plugin for PHP {
 
         println!("Installing {}", self.name());
         utils::write_conf(&PHP_CONFIG, Path::new(&full_install_dir).join("php.ini"))?;
+        fs::create_dir("C:/pommet/bin/php8/logs")?;
+        fs::create_dir("C:/pommet/bin/php8/tmp")?;
+
+        #[cfg(windows)]
+        {
+            let mut perms = fs::metadata("C:/pommet/bin/php8/tmp")?.permissions();
+            perms.set_readonly(false);
+            // Windows doesn't support Unix-style permissions with set_mode
+            fs::set_permissions("C:/pommet/bin/php8/tmp", perms)?;
+        }
         self.is_installed = true;
         println!("{} is installed", self.name);
         Ok(())

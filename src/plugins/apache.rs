@@ -1,5 +1,5 @@
 use std::{
-    error::Error, path::Path, process::{Child, Command}
+    error::Error, fs, path::Path, process::{Child, Command}
 };
 
 use super::{Plugin, PluginStatus};
