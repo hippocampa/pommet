@@ -74,4 +74,7 @@ impl Plugin for PMA {
     fn toggle(&mut self) -> Result<(), Box<dyn Error>> {
         Ok(())
     }
+    fn is_toggleable(&self) -> bool {
+        false
+    }
 }

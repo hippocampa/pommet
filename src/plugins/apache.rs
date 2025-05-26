@@ -133,4 +133,7 @@ impl Plugin for Apache {
     fn status(&self) -> &PluginStatus {
         &self.status
     }
+    fn is_toggleable(&self) -> bool {
+        true
+    }
 }
