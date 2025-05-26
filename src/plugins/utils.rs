@@ -32,12 +32,35 @@ pub fn update_progress(
 }
 
 pub async fn download_plugin(plugin_url: &str, save_to: &str) -> Result<(), Box<dyn Error>> {
-    let res = reqwest::get(plugin_url).await?;
-    let total_size = res.content_length().unwrap_or(0);
+    let client = reqwest::Client::builder()
+        .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+        .build()?;
+
+    let response = client.get(plugin_url).send().await?;
+
+    // Check status code before proceeding
+    if !response.status().is_success() {
+        return Err(format!("Failed to download PHP: HTTP status {}", response.status()).into());
+    }
+
+    // Get content type to verify we're getting a zip file
+    if let Some(content_type) = response.headers().get("content-type") {
+        let content_type = content_type.to_str().unwrap_or("unknown");
+        if !content_type.contains("application/zip")
+            && !content_type.contains("application/octet-stream")
+        {
+            println!(
+                "Warning: Expected zip file but got content-type: {}",
+                content_type
+            );
+        }
+    }
+
+    let total_size = response.content_length().unwrap_or(0);
     let mut file = File::create(save_to).await?;
 
     let mut downloaded = 0;
-    let mut stream = res.bytes_stream();
+    let mut stream = response.bytes_stream();
     let mut last_percentage = 0;
 
     while let Some(item) = stream.next().await {
@@ -46,6 +69,13 @@ pub async fn download_plugin(plugin_url: &str, save_to: &str) -> Result<(), Box<
         downloaded += chunk.len() as u64;
 
         update_progress(downloaded, total_size, &mut last_percentage, "Download")?;
+    }
+
+    // Verify the file is not empty
+    let file_size = tokio::fs::metadata(save_to).await?.len();
+    if file_size < 1000 {
+        // Arbitrary small size that's definitely not a valid PHP zip
+        return Err("Downloaded file is too small to be a valid PHP archive".into());
     }
 
     println!("\nDownload complete!");

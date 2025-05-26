@@ -6,7 +6,7 @@ use ratatui::{
     widgets::{Block, Paragraph},
 };
 
-use crate::plugins::{Plugin, apache::Apache};
+use crate::plugins::{Plugin, apache::Apache, php::PHP};
 
 pub struct App {
     plugins: Vec<Box<dyn Plugin>>,
@@ -17,7 +17,7 @@ pub struct App {
 impl App {
     pub fn new() -> Self {
         Self {
-            plugins: vec![Box::new(Apache::new())],
+            plugins: vec![Box::new(Apache::new()), Box::new(PHP::new())],
             root_dir: "C:/pommet".to_string(),
             exit: false,
         }
