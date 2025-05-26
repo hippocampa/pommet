@@ -1,6 +1,8 @@
-use std::path::Path;
+use std::{
+    error::Error, path::Path, process::{Child, Command}
+};
 
-use super::Plugin;
+use super::{Plugin, PluginStatus};
 use crate::plugins::utils;
 
 const APACHE_CONFIG: &[u8] = include_bytes!("../config/httpd.conf");
@@ -8,20 +10,26 @@ const APACHE_CONFIG: &[u8] = include_bytes!("../config/httpd.conf");
 pub struct Apache {
     name: String,
     download_url: String,
-    // pid: int?
-    // status: on/ofF
+    child_process: Option<Child>,
+    status: PluginStatus,
     is_installed: bool, // needs to be checked
     install_dir: String,
 }
 
 impl Apache {
     pub fn new() -> Self {
-        // if httpd exist, is installed is set to true
+        let mut is_installed = false;
+        if Path::new("C:/pommet/bin/Apache24/bin/httpd.exe").exists() {
+            is_installed = true
+        }
         Self {
             name: "Apache Server v2.4.63".to_string(),
             download_url: "https://www.apachelounge.com/download/VS17/binaries/httpd-2.4.63-250207-win64-VS17.zip".to_string(),
-            is_installed: false,
+            is_installed: is_installed,
             install_dir: "bin".to_string(),
+            status:PluginStatus::Off,
+            child_process:None,
+    
         }
     }
 
@@ -58,11 +66,40 @@ impl Plugin for Apache {
         Ok(())
     }
     fn is_installed(&self) -> bool {
-        // if the install_dir exist, then return true
         self.is_installed
     }
-    fn toggle(&mut self) {
-        println!("Toggling");
-        todo!();
+    fn toggle(&mut self) -> Result<(), Box<dyn Error>> {
+        // First check if installed
+        if !self.is_installed {
+            return Err("Apache is not installed".into());
+        }
+
+        match self.status {
+            PluginStatus::On => {
+                if let Some(mut child) = self.child_process.take() {
+                    child.kill()?;
+                    child.wait()?;
+                    self.status = PluginStatus::Off;
+                }
+            }
+            PluginStatus::Off => {
+                let command_path = Path::new("C:/pommet/bin/Apache24/bin/httpd.exe");
+                
+                if !command_path.exists() {
+                    return Err(format!("Apache executable not found at: {}", command_path.display()).into());
+                }
+                
+                let child = Command::new(&command_path)
+                    .spawn()
+                    .map_err(|e| format!("Failed to start Apache: {}", e))?;
+                    
+                self.child_process = Some(child);
+                self.status = PluginStatus::On;
+            }
+        }
+        Ok(())
+    }
+    fn status(&self) -> &PluginStatus {
+        &self.status
     }
 }
