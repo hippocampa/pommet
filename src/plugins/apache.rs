@@ -37,6 +37,27 @@ impl Apache {
         utils::download_plugin(&self.download_url, "apache.zip").await?;
         Ok(())
     }
+
+    pub fn is_running(&self) -> bool {
+        // try to connect to port 80 (the port Apache listens on according to httpd.conf)
+        match std::net::TcpStream::connect("127.0.0.1:80") {
+            Ok(_) => true,
+            Err(_) => false,
+        }
+    }
+    
+    /// Waits for Apache to start with a timeout
+    pub fn wait_for_start(&self, max_attempts: u32) -> Result<(), Box<dyn Error>> {
+        let mut attempts = 0;
+        while attempts < max_attempts {
+            if self.is_running() {
+                return Ok(());
+            }
+            attempts += 1;
+            std::thread::sleep(std::time::Duration::from_millis(500));
+        }
+        Err(format!("Apache failed to start after {} attempts", max_attempts).into())
+    }
 }
 
 impl Plugin for Apache {
@@ -94,6 +115,16 @@ impl Plugin for Apache {
                     .map_err(|e| format!("Failed to start Apache: {}", e))?;
                     
                 self.child_process = Some(child);
+                
+                // Verify that Apache actually started
+                if let Err(e) = self.wait_for_start(10) {
+                    if let Some(mut child) = self.child_process.take() {
+                        let _ = child.kill(); // Best effort to kill the process
+                        let _ = child.wait();
+                    }
+                    return Err(e);
+                }
+                
                 self.status = PluginStatus::On;
             }
         }

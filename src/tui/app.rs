@@ -1,4 +1,4 @@
-use std::{error::Error, io, thread::sleep, time::Duration};
+use std::{error::Error, io};
 
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use ratatui::{
