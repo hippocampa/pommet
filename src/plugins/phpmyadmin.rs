@@ -1,8 +1,4 @@
-use std::{
-    error::Error,
-    path::Path,
-    process::{Child, Command},
-};
+use std::{error::Error, path::Path};
 
 use super::{Plugin, PluginStatus};
 use crate::plugins::utils;
