@@ -29,7 +29,6 @@ impl App {
 
     pub fn ensure_installation(&mut self) -> Result<(), Box<dyn Error>> {
         for plugin in &mut self.plugins {
-            // !fix me: check if the dir in every plugin exist => true/false
             if !plugin.is_installed() {
                 plugin.install()?;
             }
