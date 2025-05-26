@@ -1,14 +1,21 @@
 use std::error::Error;
 
 pub mod apache;
-pub mod msql;
+pub mod mariadb;
+pub mod php;
+pub mod phpmyadmin;
 mod utils;
 
+pub enum PluginStatus {
+    On,
+    Off,
+}
+
 pub trait Plugin {
-    fn get_name(&self) -> &String;
-    fn is_installed(&self) -> bool;
+    // maybe add installable?
+    fn name(&self) -> &String;
     fn install(&mut self) -> Result<(), Box<dyn Error>>;
-    fn toggle(&mut self);
-    fn status(&self) -> &String;
-    fn ref_array(&self) -> [&String; 2];
+    fn is_installed(&self) -> bool;
+    fn status(&self) -> &PluginStatus;
+    fn toggle(&mut self) -> Result<(), Box<dyn Error>>;
 }
