@@ -12,7 +12,7 @@ pub struct Apache {
     download_url: String,
     child_process: Option<Child>,
     status: PluginStatus,
-    is_installed: bool, // needs to be checked
+    is_installed: bool,
     install_dir: String,
 }
 
@@ -119,7 +119,7 @@ impl Plugin for Apache {
                 // Verify that Apache actually started
                 if let Err(e) = self.wait_for_start(10) {
                     if let Some(mut child) = self.child_process.take() {
-                        let _ = child.kill(); // Best effort to kill the process
+                        let _ = child.kill();
                         let _ = child.wait();
                     }
                     return Err(e);
