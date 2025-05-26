@@ -16,6 +16,7 @@ pub struct Apache {
 
 impl Apache {
     pub fn new() -> Self {
+        // if httpd exist, is installed is set to true
         Self {
             name: "Apache Server v2.4.63".to_string(),
             download_url: "https://www.apachelounge.com/download/VS17/binaries/httpd-2.4.63-250207-win64-VS17.zip".to_string(),
