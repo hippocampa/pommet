@@ -139,12 +139,6 @@ Setelah instalasi selesai:
 
 > **Catatan**: Setelah terinstal, Pommet dapat dijalankan tanpa hak administrator. Hak admin hanya diperlukan saat instalasi awal.
 
-### Cara Penggunaan
-
-Jalankan Pommet dan gunakan shortcut keyboard untuk mengontrol layanan:
-
-***tobeconfirmed***
-
 ### Akses Layanan
 
 Setelah layanan berjalan, Anda dapat mengakses:
@@ -172,6 +166,35 @@ C:/pommet/bin/
 
 Pastikan untuk membuat backup sebelum melakukan perubahan pada file konfigurasi, dan restart layanan yang terkait setelah melakukan modifikasi.
 
+## Panduan Uninstall
+Untuk menghapus Pommet dari sistem:
+
+### Opsi 1: Powershell (Automatis)
+```powershell
+# Hentikan semua layanan Pommet jika sedang berjalan
+taskkill /f /im "httpd.exe" 2>$null
+taskkill /f /im "mysqld.exe" 2>$null
+taskkill /f /im "pommet.exe" 2>$null
+
+# Hapus direktori Pommet
+Remove-Item -Recurse -Force "C:\pommet" -ErrorAction SilentlyContinue
+
+# Hapus dari PATH
+$currentPath = [Environment]::GetEnvironmentVariable("PATH", "User")
+$newPath = $currentPath -replace ";C:\\pommet", "" -replace "C:\\pommet;", "" -replace "C:\\pommet", ""
+[Environment]::SetEnvironmentVariable("PATH", $newPath, "User")
+
+Write-Host "Pommet berhasil dihapus dari sistem."
+```
+
+### Opsi 2: Manual
+1. Hentikan semua pelayanan Pommet jika sedang berjalan.
+2. Hapus folder `C:\pommet` beserta seluruh isinya.
+3. Hapus `C:\pommet` dari PATH environment variable:
+  - Buka System Properties → Advanced → Environment Variables
+  - Pilih PATH di User variables → Edit
+  - Hapus `C:\pommet` dari daftar
+  - Restart terminal untuk memastikan perubahan PATH diterapkan
 ---
 
 ## Pengembangan
