@@ -222,7 +222,6 @@ cargo build --release
 Proyek ini masih membutuhkan bantuan pengembangan dalam beberapa area:
 
 ### Area yang Membutuhkan Bantuan
-- Pembaruan dokumentasi berbahasa inggris
 - Implementasi log realtime seperti yang ada di XAMPP
 - Deteksi otomatis untuk layanan yang masih berjalan
 - Refaktoring trait Plugin, kemungkinan memerlukan trait Toggleable
