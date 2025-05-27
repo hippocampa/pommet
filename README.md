@@ -17,8 +17,6 @@
   <p align="center">
     Toolkit Pengembangan PHP Lokal yang Ringan
     <br />
-    <a href="https://github.com/hippocampa/pommet">Lihat Demo</a>
-    &middot;
     <a href="https://github.com/hippocampa/pommet/issues/new?labels=bug&template=bug-report---.md">Laporkan Bug</a>
     &middot;
     <a href="https://github.com/hippocampa/pommet/issues/new?labels=enhancement&template=contribute-feature---.md">Berkontribusi</a>
@@ -29,6 +27,11 @@
 > Dokumentasi ini ditulis dalam Bahasa Indonesia. [Klik di sini](docs/README_EN.md) untuk versi bahasa Inggris.
 
 ---
+<div align="center">
+
+![Pommet Terminal Interface](docs/assets/pommet-tui.png)
+
+</div>
 
 ## Tentang Pommet
 
