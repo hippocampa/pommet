@@ -40,9 +40,6 @@ impl App {
     }
 
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<(), Box<dyn Error>> {
-        // test
-        self.plugins[0].toggle()?;
-        self.plugins[2].toggle()?;
         while !self.exit {
             terminal.draw(|frame| self.draw(frame))?;
             self.handle_events()?;
