@@ -78,11 +78,11 @@ impl<'a> Dashboard<'a> {
             );
         let details_info = vec![
             Line::from(vec![Span::styled(
-                "Windows Dev Stack Manager",
+                "php mini development toolkit",
                 Style::default().fg(Color::Rgb(230, 230, 250)),
             )]),
             Line::from(vec![Span::styled(
-                "github.com/your-repo/pommet",
+                "github.com/hippocampa/pommet",
                 Style::default().fg(Color::Rgb(135, 206, 235)).underlined(),
             )]),
         ];
