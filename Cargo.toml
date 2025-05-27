@@ -2,13 +2,26 @@
 name = "pommet"
 version = "0.1.0"
 edition = "2024"
+authors = ["I Gede Teguh Satya Dharma (hippocampa) <tsdhrm@outlook.com>"]
+description = "A terminal-based user interface (TUI) for managing PHP web development stack including Apache, MariaDB, PHP, and phpMyAdmin"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/hippocampa/pommet"
+homepage = "https://github.com/hippocampa/pommet"
+readme = "README.md"
+keywords = ["php", "apache", "mariadb", "tui", "webdev"]
+categories = ["command-line-utilities"]
+exclude = ["tests/*", "benches/*", ".github/*", "*.log"]
 
 [dependencies]
 bzip2 = "0.5.2"
 crossterm = "0.29.0"
 ratatui = "0.29.0"
 tar = "0.4.44"
-reqwest = { version = "0.12,0", features = ["stream"] }
+reqwest = { version = "0.12.0", features = ["stream"] }
 tokio = { version = "1.0", features = ["full"] }
 futures-util = "0.3"
 zip = "4.0.0"
+
+[[bin]]
+name = "pommet"
+path = "src/main.rs"

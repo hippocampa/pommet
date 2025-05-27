@@ -1,5 +1,5 @@
 use std::{
-    error::Error, fs, path::Path, process::{Child, Command}
+    error::Error, path::Path, process::{Child, Command}
 };
 
 use super::{Plugin, PluginStatus};
@@ -132,5 +132,8 @@ impl Plugin for Apache {
     }
     fn status(&self) -> &PluginStatus {
         &self.status
+    }
+    fn is_toggleable(&self) -> bool {
+        true
     }
 }

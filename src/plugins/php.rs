@@ -2,9 +2,7 @@ use std::{error::Error, fs, path::Path};
 
 use super::{Plugin, PluginStatus};
 use crate::plugins::utils;
-use std::os::windows::fs::MetadataExt;
 
-// TODO: php.ini
 const PHP_CONFIG: &[u8] = include_bytes!("../config/php.ini");
 
 pub struct PHP {
@@ -79,5 +77,8 @@ impl Plugin for PHP {
     }
     fn status(&self) -> &PluginStatus {
         &self.status
+    }
+    fn is_toggleable(&self) -> bool {
+        false
     }
 }
